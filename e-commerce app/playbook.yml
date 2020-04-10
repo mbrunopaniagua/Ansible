@@ -7,7 +7,7 @@
         name: firewalld
         state: present
 
-    - name: Start service firewallD
+    - name: Start firewallD service
       service:
         name: firewalld
         state: started
@@ -15,4 +15,22 @@
     - name: Enable systemctl firewallD
       systemd:
         name: firewalld
+        enabled: yes
+
+    - name: Install mariadb-server
+      become: yes
+      yum:
+        name: mariadb-server
+        state: present
+
+    - name: Start mariadb service
+      become: yes
+      service:
+        name: mariadb
+        state: started
+
+    - name: Enable systemctl mariadb
+      become: yes
+      systemd:
+        name: mariadb
         enabled: yes
