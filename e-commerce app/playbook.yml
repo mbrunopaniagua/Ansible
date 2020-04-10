@@ -1,0 +1,18 @@
+-
+  name: Deploy e-commerce app
+  hosts: all
+  tasks:
+    - name: Install firewallD
+      yum:
+        name: firewalld
+        state: present
+
+    - name: Start service firewallD
+      service:
+        name: firewalld
+        state: started
+
+    - name: Enable systemctl firewallD
+      systemd:
+        name: firewalld
+        enabled: yes
