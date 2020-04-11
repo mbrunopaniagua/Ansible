@@ -34,3 +34,37 @@
       systemd:
         name: mariadb
         enabled: yes
+
+    - name: Add port db to firewall
+      become: yes
+      firewalld:
+        port: 3306/tcp
+        permanent: yes
+        zone: public
+        state: enabled
+
+    - name: Reload service firewalld
+      become: yes
+      service:
+        name: firewalld
+        state: reloaded
+
+    - name: Install MySQL-python
+      become: yes
+      yum:
+        name: MySQL-python
+        state: present
+
+    - name: Create a new databse
+      mysql_db:
+        name: ecomdb
+        login_host: localhost
+        state: present
+
+    - name: Create admin database user
+      mysql_user:
+        name: ecomuser
+        host: localhost
+        password: ecompassword
+        priv: '*.*:ALL'
+        state: present
