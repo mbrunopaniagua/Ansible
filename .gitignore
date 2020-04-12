@@ -1,0 +1,3 @@
+*.retry
+*.remote-sync.json
+*.rtsz
