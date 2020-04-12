@@ -1,143 +1,26 @@
--
-  name: Deploy e-commerce app
-  hosts: all
-  tasks:
-    - name: Install firewallD
-      yum:
-        name: firewalld
-        state: present
+---
+# ==============================================================================
+# Do basic firewallD setup for all hosts
+# ==============================================================================
+- hosts: all
 
-    - name: Start firewallD service and ensure is running
-      service:
-        name: firewalld
-        state: started
-        enabled: yes
+  roles:
+    - firewalld
 
+# ==============================================================================
+# Do basic database setup for all hosts
+# ==============================================================================
+- hosts: all
+  become: yes
 
+  roles:
+    - database
 
-    - name: Install mariadb-server
-      become: yes
-      yum:
-        name: mariadb-server
-        state: present
+# ==============================================================================
+# Do basic web setup and deploy for all hosts
+# ==============================================================================
+- hosts: all
+  become: yes
 
-    - name: Start mariadb service and ensure is running
-      become: yes
-      service:
-        name: mariadb
-        state: started
-        enabled: yes
-
-    - name: Add port db to firewall
-      become: yes
-      firewalld:
-        port: 3306/tcp
-        permanent: yes
-        zone: public
-        state: enabled
-
-    - name: Reload service firewalld
-      become: yes
-      service:
-        name: firewalld
-        state: reloaded
-
-
-
-    - name: Install MySQL-python
-      become: yes
-      yum:
-        name: MySQL-python
-        state: present
-
-    - name: Copy file with owner and permissions
-      copy:
-        src: ./.my.cnf
-        dest: /home/osboxes/.my.cnf
-        owner: osboxes
-        group: osboxes
-        mode: '0644'
-
-    - name: Create a new databse
-      mysql_db:
-        login_user: root
-        login_password:
-        name: ecomdb
-        state: present
-      register: db_created
-
-    - name: Create admin database user
-      mysql_user:
-        login_user: root
-        login_password:
-        name: ecomuser
-        host: localhost
-        password: ecompassword
-        priv: '*.*:ALL'
-        state: present
-
-    - name: Restart service mariadb
-      become: yes
-      service:
-        name: mariadb
-        state: restarted
-        enabled: yes
-
-
-    - name: Install git
-      become: yes
-      yum:
-        name: git
-        state: present
-
-    - name: Download code
-      become: yes
-      git:
-        repo: https://github.com/kodekloudhub/learning-app-ecommerce.git
-        dest: /var/www/html/
-        force: yes
-
-    - name: Insert data
-      mysql_db:
-        login_user: root
-        login_password:
-        name: ecomdb
-        state: import
-        target: /var/www/html/assets/db-load-script.sql
-      when: db_created.changed
-
-
-
-    - name: Install required packages
-      become: yes
-      yum:
-        name: httpd, php, php-mysql
-        state: present
-
-    - name: Add port db to firewall
-      become: yes
-      firewalld:
-        port: 80/tcp
-        permanent: yes
-        zone: public
-        state: enabled
-
-    - name: Reload service firewalld
-      become: yes
-      service:
-        name: firewalld
-        state: reloaded
-
-    - name: Start service httpd
-      become: yes
-      service:
-        name: httpd
-        state: started
-        enabled: yes
-
-    - name: Replace ip by localhost
-      become: yes
-      lineinfile:
-        path: /var/www/html/index.php
-        regexp: '^172\.20\.1\.101$'
-        line: 'localhost'
+  roles:
+    - web
