@@ -1,3 +1,16 @@
 *.retry
 *.remote-sync.json
 *.rtsz
+.idea/$CACHE_FILE$
+.idea/.gitignore
+.idea/Ansible.iml
+.idea/codeStyles/
+.idea/compiler.xml
+.idea/deployment.xml
+.idea/inspectionProfiles/
+.idea/misc.xml
+.idea/modules.xml
+.idea/sonarlint/
+.idea/vcs.xml
+.idea/webServers.xml
+ansible-lab.backup
