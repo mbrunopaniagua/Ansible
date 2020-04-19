@@ -18,6 +18,9 @@
         - "MySQL-python"
         - "python-pip"
 
-    - include: tasks/deploy_db.yml
-    - include: tasks/deploy_web.yml
+    - name: Deploy db
+      import_tasks: tasks/deploy_db.yml
+
+    - name: Deploy web
+      import_tasks: tasks/deploy_web.yml
 
