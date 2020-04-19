@@ -14,6 +14,7 @@
         - "epel-release"
         - "python"
         - "python-devel"
+        - "@Development tools"
 
     - name: Install MySQL community repository
       yum:
@@ -62,7 +63,7 @@
 
     - name: Copy file with owner and permissions
       copy:
-        src: ./.my.cnf
+        src: .my.cnf
         dest: /home/osboxes/.my.cnf
         owner: osboxes
         group: osboxes
@@ -70,36 +71,24 @@
 
     - name: Create Application Database
       mysql_db:
-        name: employee_db
+        name: "{{ db_name }}"
         state: present
 
-    - name: Download zlib
-      shell:
-        cmd: wget https://zlib.net/zlib-1.2.11.tar.gz
+    - name: Upgrade zlib to latest version
+      shell: "{{ item }}"
+      args:
         chdir: /tmp
-
-    - name: Extract zlib.tar.gz into /tmp/zlib
-      unarchive:
-        src: /tmp/zlib-1.2.11.tar.gz
-        dest: /tmp/zlib
-
-    - name: Configure it
-      shell: /tmp/zlib/.configure --shared --prefix=/usr
-
-    - name: Build the default target
-      make:
-        chdir: /tmp/zlib
-
-    - name: Run 'install' target as root
-      make:
-        chdir: /tmp/zlib
-        target: install
-      become: yes
+      with_items:
+        - "wget https://zlib.net/zlib-1.2.11.tar.gz"
+        - "tar -xzf zlib-1.2.11.tar.gz"
+        - "/tmp/zlib-1.2.11/configure  --prefix=/usr"
+        - "/usr/bin/make"
+        - "/usr/bin/make install"
 
     - name: Create Database user
       mysql_user:
-        name: db_user
-        password: Passw0rd
+        name: "{{ db_user }}"
+        password: "{{ db_password }}"
         priv: '*.*:ALL'
         state: present
 
@@ -109,4 +98,4 @@
         dest: /opt/app.py
 
     - name: Start web server
-      shell: FLASK_APP=/opt/app.py nohup flask run --host=0.0.0.0 &
+      shell: FLASK_APP=/opt/app.py nohup flask run --host=0.0.0.0 --port=5000 &
