@@ -5,22 +5,8 @@
 - name: Deploy a web application
   hosts: db-web-server1
   become: yes
-  tasks:
-    - name: Install all required dependencies
-      yum:
-        name: "{{ item }}"
-        state: present
-      with_items:
-        - "epel-release"
-        - "python"
-        - "python-devel"
-        - "@Development tools"
-        - "MySQL-python"
-        - "python-pip"
-
-    - name: Deploy db
-      import_tasks: tasks/deploy_db.yml
-
-    - name: Deploy web
-      import_tasks: tasks/deploy_web.yml
+  roles:
+    - python
+    - mysql_db
+    - flask_web
 

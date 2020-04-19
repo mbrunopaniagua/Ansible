@@ -1,3 +1,4 @@
+---
 - name: Install MySQL community repository
   yum:
     name: "http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm"
