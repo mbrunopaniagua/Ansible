@@ -1,4 +1,5 @@
-name: Install all required dependencies
+---
+- name: Install all required dependencies
   yum:
     name: "{{ item }}"
     state: present

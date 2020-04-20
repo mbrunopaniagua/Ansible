@@ -4,9 +4,36 @@
 
 - name: Deploy a web application
   hosts: db-web-server1
+  any_errors_fatal: yes
   become: yes
-  roles:
-    - python
-    - mysql_db
-    - flask_web
+  #roles:
+  #  - python
+  #  - mysql_db
+  #  - flask_web
 
+  tasks:
+    - name: Sending email
+      mail:
+        host: smtp.gmail.com
+        port: 465
+        secure: always
+        username: mbrunopaniagua@gmail.com
+        password: Noa24072016..
+        from: mbrunopaniagua@gmail.com
+        to: mario.bruno.paniagua@ing.com
+        subject: Ansible-report
+        body: System {{ ansible_hostname }} has been successfully provisioned.
+
+# - name: Monitor Web Application for 6 Minutes
+#   hosts: db-web-server1
+#   command: /opt/monitor_webapp.py
+#  async: 360
+#  poll: 0
+#  register: webapp_result
+
+# - name: Check status web app monitor
+#  async_status:
+#    jid: "{{ webapp_result.ansible_job_id }}"
+#  register: job_result
+#  until: job_result.finished
+#  retries: 30
